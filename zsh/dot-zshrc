@@ -1,0 +1,83 @@
+# Performance test
+# zmodload zsh/zprof
+
+HOMEBREW_PREFIX="/usr/local"
+# Others
+export PATH="/Users/vahagn/.local/share/nvim/mason/bin/:$PATH"
+export PATH="$HOME/go/bin:$PATH"
+export PATH="$HOMEBREW_PREFIX/bin:$PATH"
+export PATH="$HOMEBREW_PREFIX/opt:$PATH"
+
+# Variables
+export PATH="$PATH":"$HOME/.pub-cache/bin"
+export PATH="$PATH":"$HOME/Other/azure_cli"
+export PATH="$PATH":"$HOME/.config/scripts"
+export PATH="$PATH:/Users/vahagn/Projects/bochka:/Users/vahagn/Applications/Flutter/bin"
+
+export PKG_CONFIG_PATH="/usr/local/opt/libev/lib/pkgconfig:$PKG_CONFIG_PATH"
+
+export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home"
+export EDITOR="nvim"
+export VISUAL="nvim"
+export RUSTFLAGS="-L $HOMEBREW_PREFIX/lib"
+export LIBRARY_PATH="$HOMEBREW_PREFIX"
+export C_INCLUDE_PATH="$HOMEBREW_PREFIX"
+
+
+autoload -Uz promptinit compinit colors
+promptinit
+colors
+
+# Do compinit once a day
+for dump in ~/.zcompdump(N.mh+24); do
+  compinit
+done
+compinit -C
+
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'
+
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git svn
+# This line obtains information from the vcs.
+zstyle ':vcs_info:git*' formats "[%b] "
+precmd() {
+    vcs_info
+}
+
+setopt prompt_subst
+prompt='%2/ %{$fg[green]%}${vcs_info_msg_0_}%{$fg[blue]%}~>%{$reset_color%} '
+
+# Enable Vi mode
+set -o vi
+
+
+# Aliases
+alias ls="ls --color=auto"
+alias vim="nvim"
+alias vi="nvim"
+
+alias icat="kitty +kitten icat"
+
+alias pjq="pbpaste | jq"
+
+function load_nvm() {
+  export NVM_DIR=~/.nvm
+  [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
+}
+
+
+export DYLD_LIBRARY_PATH="$HOMEBREW_PREFIX/lib:$DYLD_LIBRARY_PATH"
+
+# BEGIN opam configuration
+# This is useful if you're using opam as it adds:
+#   - the correct directories to the PATH
+#   - auto-completion for the opam binary
+# This section can be safely removed at any time if needed.
+[[ ! -r '/Users/vahagn/.opam/opam-init/init.zsh' ]] || source '/Users/vahagn/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
+# END opam configuration
+
+# Performance test
+# zprof
+
+. /usr/local/opt/asdf/libexec/asdf.sh
+___MY_VMOPTIONS_SHELL_FILE="${HOME}/.jetbrains.vmoptions.sh"; if [ -f "${___MY_VMOPTIONS_SHELL_FILE}" ]; then . "${___MY_VMOPTIONS_SHELL_FILE}"; fi

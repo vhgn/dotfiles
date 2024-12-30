@@ -1,0 +1,15 @@
+[init]
+	defaultBranch = main
+[user]
+	name = Vahagn
+	email = vahagn.khachatryan@relcu.com
+[push]
+	autoSetupRemote = true
+[rerere]
+	enabled = true
+[rebase]
+	autostash = true
+[commit]
+	verbose = true
+[diff]
+	algorithm = histogram
