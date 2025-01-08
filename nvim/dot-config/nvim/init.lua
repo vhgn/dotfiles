@@ -588,7 +588,12 @@ end
 require("mason").setup()
 require("mason-nvim-dap").setup({
 	automatic_installation = false,
-	ensure_installed = { "python" },
+	ensure_installed = {
+		-- Due to a bug with the latest version of vscode-js-debug, need to lock to specific version
+		-- See: https://github.com/mxsdev/nvim-dap-vscode-js/issues/58#issuecomment-2213230558
+		-- "js@v1.76.1",
+		"js"
+	},
 	handlers = {},
 })
 
@@ -617,7 +622,19 @@ local dap = require("dap")
 require("dap-vscode-js").setup({
 	adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
 	debugger_path = vim.fn.expand("~/Others/vscode-js-debug"),
+	-- debugger_cmd = { "js-debug-adapter" }
 })
+
+require("dap").adapters["pwa-node"] = {
+	type = "server",
+	host = "localhost",
+	port = "${port}",
+	executable = {
+		command = "node",
+		args = { vim.fn.expand("~/.local/share/nvim/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js"), "${port}" },
+	}
+}
+
 
 ---@diagnostic disable-next-line: undefined-field
 -- dap.configurations.typescript = {
