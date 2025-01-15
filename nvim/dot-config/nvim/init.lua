@@ -6,6 +6,8 @@
 vim.cmd([[set exrc]])
 vim.cmd([[set secure]])
 
+vim.g.moonflyTransparent = 1
+
 vim.g.mapleader = "'"
 
 vim.keymap.set("n", "<BS><BS>", ":below G<CR>")
@@ -620,9 +622,9 @@ local dap = require("dap")
 
 ---@diagnostic disable-next-line: missing-fields
 require("dap-vscode-js").setup({
-	adapters = { "pwa-node", "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
+	adapters = { "pwa-node",  }, -- "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
 	debugger_path = vim.fn.expand("~/Others/vscode-js-debug"),
-	-- debugger_cmd = { "js-debug-adapter" }
+	debugger_cmd = { "js-debug-adapter" }
 })
 
 require("dap").adapters["pwa-node"] = {
