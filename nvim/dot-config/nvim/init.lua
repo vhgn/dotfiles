@@ -20,8 +20,6 @@ vim.keymap.set("v", "<BS>j", ":diffget //3<CR>")
 
 vim.keymap.set("v", "<C-y>", '"*y')
 
-vim.keymap.set("n", "<C-;>", ":noh<CR>")
-
 vim.filetype.add({
 	extension = {
 		livemd = "markdown",
@@ -31,18 +29,6 @@ vim.filetype.add({
 ----------------------------------------
 -- Python notebooks
 ----------------------------------------
-
---- TODO
-
-local function otter_config()
-	-- local otter = require("otter")
-	-- otter.setup({
-	-- 	verbose = {
-	-- 		no_code_found = false,
-	-- 	},
-	-- })
-	-- otter.activate()
-end
 
 ----------------------------------------
 -- Terminal
@@ -306,11 +292,6 @@ vim.opt.fillchars = {
 	verthoriz = "╋",
 }
 
--- Quickfix
-vim.keymap.set("n", "zj", ":cnext<CR>", { silent = true })
-vim.keymap.set("n", "zk", ":cprev<CR>", { silent = true })
-vim.keymap.set("n", "zl", ":cclose<CR>", { silent = true })
-
 -- Autosave on fucus lost
 vim.api.nvim_create_autocmd("FocusLost", {
 	pattern = "*",
@@ -438,13 +419,6 @@ local plugins = {
 	-- languages
 	{ "nvim-treesitter/nvim-treesitter", config = treesitter_config,  build = ":TSUpdate" },
 	{ "nvim-treesitter/nvim-treesitter-context", opts = {} },
-	{
-		"jmbuhr/otter.nvim",
-		dependencies = {
-			"nvim-treesitter/nvim-treesitter",
-		},
-		config = otter_config,
-	},
 
 	-- color theme
 	{ "bluz71/vim-moonfly-colors", init = moonfly_init, name = "moonfly", lazy = false, priority = 1000 },
@@ -501,21 +475,19 @@ local grep_on_quickfix = function()
 	builtin.live_grep({ vimgrep_arguments = args })
 end
 
+vim.keymap.set("n", "zr", builtin.resume, {})
 vim.keymap.set("n", "zf", builtin.find_files, {})
 vim.keymap.set("n", "zg", builtin.live_grep, {})
 vim.keymap.set("n", "zG", grep_on_quickfix, {})
 vim.keymap.set("n", "zd", builtin.quickfix, {})
 vim.keymap.set("n", "zx", builtin.commands, {})
-vim.keymap.set("n", "zs", builtin.lsp_dynamic_workspace_symbols, {})
+vim.keymap.set("n", "zS", builtin.lsp_dynamic_workspace_symbols, {})
+vim.keymap.set("n", "zs", builtin.lsp_document_symbols, {})
 vim.keymap.set("n", "zb", builtin.git_branches, {})
 vim.keymap.set("n", "zc", builtin.current_buffer_fuzzy_find, {})
 -- Visual mode alternatives
 vim.keymap.set("v", "zg", '"zy:Telescope live_grep default_text=<C-r>z<cr>', {})
 vim.keymap.set("v", "zx", builtin.commands, {})
-
-local maximizer = require("maximizer")
-vim.keymap.set("n", "<C-w><C-o>", maximizer.toggle, {})
-vim.keymap.set("v", "<C-w><C-o>", maximizer.toggle, {})
 
 local harpoon_ui = require("harpoon.ui")
 local harpoon_mark = require("harpoon.mark")
@@ -632,15 +604,10 @@ local on_attach = function(_, bufnr)
 	vim.keymap.set("n", "zq", vim.diagnostic.setqflist, opts)
 
 	vim.keymap.set("n", "gr", vim.lsp.buf.rename)
-	vim.keymap.set({ "v", "n" }, "ga", require("actions-preview").code_actions)
+	vim.keymap.set({ "v", "n" }, "ga", vim.lsp.buf.code_action, opts)
 	vim.keymap.set("n", "ge", vim.lsp.buf.references, opts)
 	vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
 	vim.keymap.set("n", "<2-LeftMouse>", vim.lsp.buf.definition, opts)
-
-	-- Default is <C-w>d
-	-- vim.keymap.set("n", "[D", vim.diagnostic.open_float, opts)
-	-- vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-	-- vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 
 	local format_fn = function()
 		vim.lsp.buf.format({
@@ -866,10 +833,6 @@ require("mason-lspconfig").setup_handlers({
 			},
 		}
 
-		if file_exists("tsserverconfig.lua") then
-			init_options = require("tsserverconfig")
-		end
-
 		require("lspconfig").ts_ls.setup({
 			on_attach = on_attach,
 			capabilities = capabilities,
@@ -902,12 +865,7 @@ require("mason-lspconfig").setup_handlers({
 			},
 		})
 	end,
-	["marksman"] = function()
-		require("lspconfig").marksman.setup({
-		})
-	end,
 })
-require("lspconfig").gleam.setup({ on_attach = on_attach, capabilities = capabilities })
 
 vim.fn.sign_define("DiagnosticSignError", { text = "e", texthl = "DiagnosticSignError", numhl = "DiagnosticSignError" })
 vim.fn.sign_define("DiagnosticSignWarn", { text = "w", texthl = "DiagnosticSignWarn", numhl = "DiagnosticSignWarn" })
