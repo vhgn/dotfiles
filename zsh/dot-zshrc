@@ -7,7 +7,7 @@ export PATH="/Users/vahagn/.local/share/nvim/mason/bin/:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOMEBREW_PREFIX/bin:$PATH"
 export PATH="$HOMEBREW_PREFIX/opt:$PATH"
-export PATH="/Library/Developer/CommandLineTools:$PATH"
+export PATH="$PATH:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/"
 
 # Variables
 export PATH="$PATH":"$HOME/.pub-cache/bin"
@@ -21,7 +21,10 @@ export JAVA_HOME="/Library/Java/JavaVirtualMachines/jdk-19.jdk/Contents/Home"
 export EDITOR="nvim"
 export VISUAL="nvim"
 export RUSTFLAGS="-L $HOMEBREW_PREFIX/lib"
+export LDFLAGS="-ld_classic"
+
 export LIBRARY_PATH="$HOMEBREW_PREFIX"
+export LIBRARY_PATH="$LIBRARY_PATH:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx/"
 export C_INCLUDE_PATH="$HOMEBREW_PREFIX"
 
 
