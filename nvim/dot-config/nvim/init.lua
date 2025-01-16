@@ -21,9 +21,6 @@ vim.keymap.set("v", "<BS>j", ":diffget //3<CR>")
 vim.keymap.set("v", "<C-y>", '"*y')
 
 vim.keymap.set("n", "<C-;>", ":noh<CR>")
-vim.keymap.set("n", "<C-'>", ":sp<CR>:term<CR>ipython3<CR>")
-
-vim.keymap.set("n", "<Leader>fm", ":Make!<CR>")
 
 vim.filetype.add({
 	extension = {
@@ -170,6 +167,95 @@ local telescope_opts = {
 }
 
 ----------------------------------------
+-- Gitsigns
+----------------------------------------
+local gitsigns_opts = {
+	signs = {
+		add = { text = "+" },
+		change = { text = "~" },
+		delete = { text = "x" },
+		topdelete = { text = "X" },
+		changedelete = { text = "~" },
+		untracked = { text = "*" },
+	},
+	signs_staged = {
+		add = { text = "[" },
+		change = { text = "[" },
+		delete = { text = "[" },
+		topdelete = { text = "[" },
+		changedelete = { text = "[" },
+		untracked = { text = "[" },
+	},
+	signcolumn = true,
+	numhl = false,
+	linehl = false,
+	word_diff = false,
+	watch_gitdir = {
+		follow_files = true,
+	},
+	attach_to_untracked = true,
+	current_line_blame = false,
+	current_line_blame_opts = {
+		virt_text = true,
+		virt_text_pos = "eol",
+		delay = 1000,
+		ignore_whitespace = false,
+	},
+	current_line_blame_formatter = "<author>, <author_time:%Y-%m-%d> - <summary>",
+	sign_priority = 6,
+	update_debounce = 100,
+	status_formatter = nil,
+	max_file_length = 40000,
+	preview_config = {
+		border = "single",
+		style = "minimal",
+		relative = "cursor",
+		row = 0,
+		col = 1,
+	},
+	-- yadm = {
+	-- 	enable = false,
+	-- },
+}
+----------------------------------------
+-- Lualine
+----------------------------------------
+local lualine_opts = {
+	options = {
+		icons_enabled = false,
+		theme = "auto",
+		section_separators = "",
+		component_separators = "/",
+	},
+	sections = {
+		lualine_a = {
+			{
+				"mode",
+				fmt = function(str)
+					return str:sub(1, 1)
+				end,
+			},
+		},
+		lualine_b = {
+			"branch",
+			"diff",
+			"diagnostics",
+		},
+		lualine_c = {
+			{
+				"filename",
+				file_status = true,
+				path = 2,
+			},
+		},
+		lualine_z = {},
+		lualine_y = {},
+		lualine_x = {},
+	},
+	extensions = { "quickfix", "fugitive", "fzf" },
+}
+
+----------------------------------------
 -- Colorscheme
 ----------------------------------------
 local function moonfly_init()
@@ -236,14 +322,6 @@ vim.api.nvim_create_autocmd("FocusLost", {
 --------------------------------------
 local plugins = {
 	-- Others
-	{
-		"vhyrro/luarocks.nvim",
-		priority = 1001, -- this plugin needs to run before anything else
-		opts = {
-			rocks = { "magick", "lua-cjson" },
-		},
-	},
-
 	"williamboman/mason.nvim",
 	"williamboman/mason-lspconfig.nvim",
 	"neovim/nvim-lspconfig",
@@ -255,12 +333,10 @@ local plugins = {
 	"hrsh7th/nvim-cmp",
 
 	-- Neovim autocompletion
-	"folke/neodev.nvim",
 	"mfussenegger/nvim-dap",
 	{ "rcarriga/nvim-dap-ui",    dependencies = "nvim-neotest/nvim-nio" },
 	"jay-babu/mason-nvim-dap.nvim",
 	"mxsdev/nvim-dap-vscode-js",
-	"aznhe21/actions-preview.nvim",
 
 	"L3MON4D3/LuaSnip",
 	"saadparwaiz1/cmp_luasnip",
@@ -291,20 +367,10 @@ local plugins = {
 			})
 		end,
 	},
-	"j-hui/fidget.nvim",
-	{
-		"0x00-ketsu/maximizer.nvim",
-		config = function()
-			require("maximizer").setup {
-				-- your configuration comes here
-				-- or leave it empty to use the default settings
-				-- refer to the configuration section below
-			}
-		end
-	},
+	{ "j-hui/fidget.nvim", opts = {} },
 
 	-- version control
-	{ "lewis6991/gitsigns.nvim", opts = {} },
+	{ "lewis6991/gitsigns.nvim", opts = gitsigns_opts },
 	"tpope/vim-fugitive",
 
 	-- navigation
@@ -320,7 +386,6 @@ local plugins = {
 	"tpope/vim-vinegar",
 	"tpope/vim-dotenv",
 	"tpope/vim-dispatch",
-	"tpope/vim-projectionist",
 	"tpope/vim-dadbod",
 
 	-- tools
@@ -372,7 +437,7 @@ local plugins = {
 
 	-- languages
 	{ "nvim-treesitter/nvim-treesitter", config = treesitter_config,  build = ":TSUpdate" },
-	"nvim-treesitter/nvim-treesitter-context",
+	{ "nvim-treesitter/nvim-treesitter-context", opts = {} },
 	{
 		"jmbuhr/otter.nvim",
 		dependencies = {
