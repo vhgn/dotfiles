@@ -348,7 +348,7 @@ local plugins = {
 			})
 		end,
 	},
-	{ "j-hui/fidget.nvim", opts = {} },
+	{ "j-hui/fidget.nvim",       opts = {} },
 
 	-- version control
 	{ "lewis6991/gitsigns.nvim", opts = gitsigns_opts },
@@ -370,7 +370,7 @@ local plugins = {
 	"tpope/vim-dadbod",
 
 	-- tools
-	{ "smjonas/live-command.nvim",       config = live_command_config },
+	{ "smjonas/live-command.nvim",               config = live_command_config },
 	"ThePrimeagen/vim-be-good",
 	"nvim-lua/plenary.nvim",
 	{
@@ -417,11 +417,11 @@ local plugins = {
 	},
 
 	-- languages
-	{ "nvim-treesitter/nvim-treesitter", config = treesitter_config,  build = ":TSUpdate" },
+	{ "nvim-treesitter/nvim-treesitter",         config = treesitter_config,  build = ":TSUpdate" },
 	{ "nvim-treesitter/nvim-treesitter-context", opts = {} },
 
 	-- color theme
-	{ "bluz71/vim-moonfly-colors", init = moonfly_init, name = "moonfly", lazy = false, priority = 1000 },
+	{ "bluz71/vim-moonfly-colors",               init = moonfly_init,         name = "moonfly",   lazy = false, priority = 1000 },
 }
 
 ----------------------------------------
@@ -654,7 +654,7 @@ local dap = require("dap")
 
 ---@diagnostic disable-next-line: missing-fields
 require("dap-vscode-js").setup({
-	adapters = { "pwa-node",  }, -- "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
+	adapters = { "pwa-node", }, -- "pwa-chrome", "pwa-msedge", "node-terminal", "pwa-extensionHost" },
 	debugger_path = vim.fn.expand("~/Others/vscode-js-debug"),
 	debugger_cmd = { "js-debug-adapter" }
 })
@@ -865,6 +865,29 @@ require("mason-lspconfig").setup_handlers({
 			},
 		})
 	end,
+	["zls"] = function()
+		-- don't show parse errors in a separate window
+		vim.g.zig_fmt_parse_errors = 0
+		-- disable format-on-save from `ziglang/zig.vim`
+		vim.g.zig_fmt_autosave = 0
+
+		require("lspconfig").zls.setup {
+			on_attach = on_attach,
+			capabilities = capabilities,
+			cmd = {"/Users/vahagn/.local/share/nvim/mason/bin/zls"},
+			settings = {
+				zls = {
+
+					-- Whether to enable build-on-save diagnostics
+					--
+					-- Further information about build-on save:
+					-- https://zigtools.org/zls/guides/build-on-save/
+					enable_build_on_save = false,
+					zig_exec_path = "/usr/local/opt/zig/bin/zig"
+				}
+			}
+		}
+	end
 })
 
 vim.fn.sign_define("DiagnosticSignError", { text = "e", texthl = "DiagnosticSignError", numhl = "DiagnosticSignError" })
