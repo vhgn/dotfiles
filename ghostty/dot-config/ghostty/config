@@ -1,3 +1,5 @@
+config-file = ?../ghostty-local
+
 keybind = global:ctrl+8=toggle_quick_terminal
 
 font-family = CaskaydiaCove Nerd Font Mono
