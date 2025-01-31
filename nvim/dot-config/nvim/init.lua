@@ -270,7 +270,7 @@ local TAB_WIDTH = 4
 vim.o.expandtab = false
 vim.o.tabstop = TAB_WIDTH
 vim.o.shiftwidth = TAB_WIDTH
-vim.o.shortmess = "I"
+vim.o.shortmess = "IF"
 vim.o.autowriteall = true
 
 vim.opt.listchars = { tab = ">>", trail = "~", extends = ">", precedes = "<", space = "·" }
