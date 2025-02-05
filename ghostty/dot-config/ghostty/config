@@ -14,6 +14,7 @@ foreground = "#bdbdbd"
 selection-background = "#b2ceee"
 selection-foreground = "#080808"
 cursor-color = "#8e8e8e"
+cursor-text = "#010101"
 
 palette = 0=#323437
 palette = 1=#ff5454
