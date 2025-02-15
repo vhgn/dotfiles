@@ -3,17 +3,11 @@
 
 HOMEBREW_PREFIX="/usr/local"
 # Others
-export PATH="/Users/vahagn/.local/share/nvim/mason/bin/:$PATH"
+export PATH="$HOME/.local/share/nvim/mason/bin/:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOMEBREW_PREFIX/bin:$PATH"
 export PATH="$HOMEBREW_PREFIX/opt:$PATH"
 export PATH="$PATH:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/"
-
-# Variables
-export PATH="$PATH":"$HOME/.pub-cache/bin"
-export PATH="$PATH":"$HOME/Other/azure_cli"
-export PATH="$PATH":"$HOME/.config/scripts"
-export PATH="$PATH:/Users/vahagn/Projects/bochka:/Users/vahagn/Applications/Flutter/bin"
 
 export PKG_CONFIG_PATH="/usr/local/opt/libev/lib/pkgconfig:$PKG_CONFIG_PATH"
 
@@ -26,7 +20,7 @@ export LDFLAGS="-ld_classic"
 export LIBRARY_PATH="$HOMEBREW_PREFIX"
 export LIBRARY_PATH="$LIBRARY_PATH:/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/macosx/"
 export C_INCLUDE_PATH="$HOMEBREW_PREFIX"
-
+export DYLD_LIBRARY_PATH="$HOMEBREW_PREFIX/lib:$DYLD_LIBRARY_PATH"
 
 autoload -Uz promptinit compinit colors
 promptinit
@@ -70,18 +64,21 @@ function load_nvm() {
 }
 
 
-export DYLD_LIBRARY_PATH="$HOMEBREW_PREFIX/lib:$DYLD_LIBRARY_PATH"
 
 # BEGIN opam configuration
 # This is useful if you're using opam as it adds:
 #   - the correct directories to the PATH
 #   - auto-completion for the opam binary
 # This section can be safely removed at any time if needed.
-[[ ! -r '/Users/vahagn/.opam/opam-init/init.zsh' ]] || source '/Users/vahagn/.opam/opam-init/init.zsh' > /dev/null 2> /dev/null
+function load_opam() {
+  [[ ! -r "$HOME/.opam/opam-init/init.zsh" ]] || source "$HOME/.opam/opam-init/init.zsh" > /dev/null 2> /dev/null
+}
 # END opam configuration
+
+function load_asdf() {
+  . /usr/local/opt/asdf/libexec/asdf.sh
+}
 
 # Performance test
 # zprof
 
-. /usr/local/opt/asdf/libexec/asdf.sh
-___MY_VMOPTIONS_SHELL_FILE="${HOME}/.jetbrains.vmoptions.sh"; if [ -f "${___MY_VMOPTIONS_SHELL_FILE}" ]; then . "${___MY_VMOPTIONS_SHELL_FILE}"; fi
