@@ -125,32 +125,115 @@ end
 ----------------------------------------
 -- Telescope
 ----------------------------------------
-local telescope_opts = {
-	pickers = {
-		find_files = {
-			theme = "dropdown",
-			find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
+local function telescope_config()
+	local telescope = require("telescope")
+	local lga_actions = require("telescope-live-grep-args.actions")
+
+	telescope.setup({
+		pickers = {
+			find_files = {
+				theme = "dropdown",
+				find_command = { "rg", "--files", "--hidden", "--glob", "!**/.git/*" },
+			},
+			live_grep = {
+				theme = "dropdown",
+			},
+			quickfix = {
+				theme = "dropdown",
+			},
+			commands = {
+				theme = "dropdown",
+			},
+			lsp_dynamic_workspace_symbols = {
+				theme = "dropdown",
+			},
+			git_branches = {
+				theme = "dropdown",
+			},
+			current_buffer_fuzzy_find = {
+				theme = "dropdown",
+			},
 		},
-		live_grep = {
-			theme = "dropdown",
-		},
-		quickfix = {
-			theme = "dropdown",
-		},
-		commands = {
-			theme = "dropdown",
-		},
-		lsp_dynamic_workspace_symbols = {
-			theme = "dropdown",
-		},
-		git_branches = {
-			theme = "dropdown",
-		},
-		current_buffer_fuzzy_find = {
-			theme = "dropdown",
-		},
-	},
-}
+		extensions = {
+			live_grep_args = {
+				auto_quoting = true, -- enable/disable auto-quoting
+				-- define mappings, e.g.
+				mappings = {   -- extend mappings
+					i = {
+						["<C-k>"] = lga_actions.quote_prompt(),
+						["<C-i>"] = lga_actions.quote_prompt({ postfix = " --iglob *" }),
+						-- freeze the current list and start a fuzzy search in the frozen list
+						["<C-space>"] = lga_actions.to_fuzzy_refine,
+					},
+				},
+				-- ... also accepts theme settings, for example:
+				-- theme = "dropdown", -- use dropdown theme
+				-- theme = { }, -- use own theme spec
+				-- layout_config = { mirror=true }, -- mirror preview pane
+			}
+		}
+	})
+
+
+	----------------------------------------
+	-- Telescope
+	----------------------------------------
+	local builtin = require("telescope.builtin")
+	local config = require("telescope.config")
+	telescope.load_extension("dap")
+	telescope.load_extension("ui-select")
+	telescope.load_extension("live_grep_args")
+
+	local extensions = telescope.extensions
+
+	local quickfix_files = function()
+		local qflist = vim.fn.getqflist()
+		local files = {}
+		local seen = {}
+		for k in pairs(qflist) do
+			local path = vim.fn.bufname(qflist[k]["bufnr"])
+			if not seen[path] then
+				files[#files + 1] = path
+				seen[path] = true
+			end
+		end
+		table.sort(files)
+		return files
+	end
+
+	local grep_on_quickfix = function()
+		local args = {}
+
+		for i, v in ipairs(config.values.vimgrep_arguments) do
+			args[#args + 1] = v
+		end
+		for i, v in ipairs(quickfix_files()) do
+			args[#args + 1] = "-g/" .. v
+		end
+
+		builtin.live_grep({ vimgrep_arguments = args })
+	end
+
+	vim.keymap.set("n", "zr", builtin.resume, {})
+	vim.keymap.set("n", "zf", builtin.find_files, {})
+	vim.keymap.set("n", "zg", builtin.live_grep, {})
+	vim.keymap.set("n", "zG", grep_on_quickfix, {})
+
+	-- Debugging
+	vim.keymap.set("n", "zdb", extensions.dap.list_breakpoints, {})
+	vim.keymap.set("n", "zdf", extensions.dap.frames, {})
+
+	vim.keymap.set("n", "zF", extensions.live_grep_args.live_grep_args, {})
+
+	vim.keymap.set("n", "zx", builtin.commands, {})
+	vim.keymap.set("n", "zS", builtin.lsp_dynamic_workspace_symbols, {})
+	vim.keymap.set("n", "zs", builtin.lsp_document_symbols, {})
+	vim.keymap.set("n", "zb", builtin.git_branches, {})
+	vim.keymap.set("n", "zc", builtin.current_buffer_fuzzy_find, {})
+	-- Visual mode alternatives
+	vim.keymap.set("v", "zg", '"zy:Telescope live_grep default_text=<C-r>z<cr>', {})
+	vim.keymap.set("v", "zx", builtin.commands, {})
+end
 
 ----------------------------------------
 -- Gitsigns
@@ -355,9 +438,13 @@ local plugins = {
 	"tpope/vim-fugitive",
 
 	-- navigation
-	{ "nvim-telescope/telescope.nvim", opts = telescope_opts },
+	{ "nvim-telescope/telescope.nvim",               config = telescope_config },
+	{ "nvim-telescope/telescope-dap.nvim" },
+	{ "nvim-telescope/telescope-ui-select.nvim" },
+	{ "nvim-telescope/telescope-live-grep-args.nvim" },
+
 	"ThePrimeagen/harpoon",
-	{ "nvim-lualine/lualine.nvim",     opts = lualine_opts },
+	{ "nvim-lualine/lualine.nvim", opts = lualine_opts },
 	"tpope/vim-repeat",
 
 	-- shortcuts
@@ -370,7 +457,7 @@ local plugins = {
 	"tpope/vim-dadbod",
 
 	-- tools
-	{ "smjonas/live-command.nvim",               config = live_command_config },
+	{ "smjonas/live-command.nvim", config = live_command_config },
 	"ThePrimeagen/vim-be-good",
 	"nvim-lua/plenary.nvim",
 	{
@@ -417,11 +504,11 @@ local plugins = {
 	},
 
 	-- languages
-	{ "nvim-treesitter/nvim-treesitter",         config = treesitter_config,  build = ":TSUpdate" },
+	{ "nvim-treesitter/nvim-treesitter",         config = treesitter_config, build = ":TSUpdate" },
 	{ "nvim-treesitter/nvim-treesitter-context", opts = {} },
 
 	-- color theme
-	{ "bluz71/vim-moonfly-colors",               init = moonfly_init,         name = "moonfly",   lazy = false, priority = 1000 },
+	{ "bluz71/vim-moonfly-colors",               init = moonfly_init,        name = "moonfly",   lazy = false, priority = 1000 },
 }
 
 ----------------------------------------
@@ -441,53 +528,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 require("lazy").setup(plugins)
 
-----------------------------------------
--- Telescope
-----------------------------------------
-local builtin = require("telescope.builtin")
-local config = require("telescope.config")
 
-local quickfix_files = function()
-	local qflist = vim.fn.getqflist()
-	local files = {}
-	local seen = {}
-	for k in pairs(qflist) do
-		local path = vim.fn.bufname(qflist[k]["bufnr"])
-		if not seen[path] then
-			files[#files + 1] = path
-			seen[path] = true
-		end
-	end
-	table.sort(files)
-	return files
-end
-
-local grep_on_quickfix = function()
-	local args = {}
-
-	for i, v in ipairs(config.values.vimgrep_arguments) do
-		args[#args + 1] = v
-	end
-	for i, v in ipairs(quickfix_files()) do
-		args[#args + 1] = "-g/" .. v
-	end
-
-	builtin.live_grep({ vimgrep_arguments = args })
-end
-
-vim.keymap.set("n", "zr", builtin.resume, {})
-vim.keymap.set("n", "zf", builtin.find_files, {})
-vim.keymap.set("n", "zg", builtin.live_grep, {})
-vim.keymap.set("n", "zG", grep_on_quickfix, {})
-vim.keymap.set("n", "zd", builtin.quickfix, {})
-vim.keymap.set("n", "zx", builtin.commands, {})
-vim.keymap.set("n", "zS", builtin.lsp_dynamic_workspace_symbols, {})
-vim.keymap.set("n", "zs", builtin.lsp_document_symbols, {})
-vim.keymap.set("n", "zb", builtin.git_branches, {})
-vim.keymap.set("n", "zc", builtin.current_buffer_fuzzy_find, {})
--- Visual mode alternatives
-vim.keymap.set("v", "zg", '"zy:Telescope live_grep default_text=<C-r>z<cr>', {})
-vim.keymap.set("v", "zx", builtin.commands, {})
 
 local harpoon_ui = require("harpoon.ui")
 local harpoon_mark = require("harpoon.mark")
