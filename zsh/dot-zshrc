@@ -58,6 +58,7 @@ alias vi="nvim"
 alias icat="kitty +kitten icat"
 
 alias pjq="pbpaste | jq"
+alias mq="rabbitmqadmin"
 
 function load_nvm() {
   export NVM_DIR=~/.nvm

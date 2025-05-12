@@ -360,11 +360,6 @@ local plugins = {
   "jay-babu/mason-nvim-dap.nvim",
   "mxsdev/nvim-dap-vscode-js",
 
-  {
-	  "pmizio/typescript-tools.nvim",
-	  dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
-	  config = typescript_tools_config,
-	},
   "L3MON4D3/LuaSnip",
   "saadparwaiz1/cmp_luasnip",
   {
@@ -450,10 +445,6 @@ local plugins = {
       vim.g.molten_image_provider = "image.nvim"
       vim.g.molten_output_win_max_height = 20
     end,
-  },
-  {
-    "3rd/image.nvim",
-    config = imagenvim_config,
   },
   {
     "kopecmaciej/vi-mongo.nvim",
@@ -695,21 +686,106 @@ dap.configurations.python = {
   },
 }
 local dapui = require("dapui")
-dapui.setup()
-
+dapui.setup({
+  controls = {
+    element = "repl",
+    enabled = true,
+    icons = {
+      disconnect = "[dis]",
+      pause = "[pause]",
+      play = "[play]",
+      run_last = "[last]",
+      step_back = "[back]",
+      step_into = "[into]",
+      step_out = "[out]",
+      step_over = "[over]",
+      terminate = "[term]"
+    }
+  },
+  element_mappings = {},
+  expand_lines = true,
+  floating = {
+    border = "single",
+    mappings = {
+      close = { "q", "<Esc>" }
+    }
+  },
+  force_buffers = true,
+  icons = {
+    collapsed = "(>)",
+    current_frame = "{>}",
+    expanded = "(v)"
+  },
+  layouts = {
+    {
+      position = "bottom",
+      size = 5,
+      elements = {
+        -- {
+        --   id = "breakpoints",
+        --   size = 0.2
+        -- },
+        {
+          id = "watches",
+          size = 0.5
+        },
+        {
+          id = "repl",
+          size = 0.5
+        },
+      },
+    },
+    {
+      position = "bottom",
+      size = 15,
+      elements = {
+        {
+          id = "stacks",
+          size = 0.5
+        },
+        {
+          id = "scopes",
+          size = 0.5
+        },
+      },
+    },
+    {
+      position = "bottom",
+      size = 20,
+      elements = {
+        {
+          id = "console",
+          size = 1
+        }
+      },
+    }
+  },
+  mappings = {
+    edit = "e",
+    expand = { "<CR>", "<2-LeftMouse>" },
+    open = "o",
+    remove = "d",
+    repl = "r",
+    toggle = "t"
+  },
+  render = {
+    indent = 1,
+    max_value_lines = 100
+  }
+})
 -- Auto open and close on debugger attached
-dap.listeners.before.attach.dapui_config = function()
-  dapui.open()
-end
-dap.listeners.before.launch.dapui_config = function()
-  dapui.open()
-end
-dap.listeners.before.event_terminated.dapui_config = function()
-  dapui.close()
-end
-dap.listeners.before.event_exited.dapui_config = function()
-  dapui.close()
-end
+-- dap.listeners.before.attach.dapui_config = function()
+--   dapui.open()
+-- end
+-- dap.listeners.before.launch.dapui_config = function()
+--   dapui.open()
+-- end
+-- dap.listeners.before.event_terminated.dapui_config = function()
+--   dapui.close()
+-- end
+-- dap.listeners.before.event_exited.dapui_config = function()
+--   dapui.close()
+-- end
 
 local function file_exists(name)
   local f = io.open(name, "r")
@@ -784,7 +860,7 @@ local on_attach = function(_, bufnr)
   vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
   vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
   vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
-.
+
   vim.keymap.set("n", "<2-LeftMouse>", vim.lsp.buf.definition, opts)
 
   local format_fn = function()
@@ -798,6 +874,12 @@ local on_attach = function(_, bufnr)
 end
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+-- To use in .nvim.lua
+vim.lspconfig = {
+  on_attach = on_attach,
+  capabilities = capabilities,
+}
 
 require("mason-lspconfig").setup()
 require("mason-lspconfig").setup_handlers({
@@ -848,7 +930,7 @@ require("mason-lspconfig").setup_handlers({
       preferences = {
         importModuleSpecifierPreference = "absolute",
         importModuleSpecifierEnding = "minimal",
-		disableAutomaticTypeAcquisition = true
+        disableAutomaticTypeAcquisition = true
       },
     }
 
