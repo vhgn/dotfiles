@@ -115,10 +115,9 @@ vim.pack.add({
 -- Colorscheme {{{
 
 -- Treesitter
-require("nvim-treesitter").setup({})
 require("nvim-treesitter").setup({
 	auto_install = true,
-	ensure_installed = { "lua", "typescript", "javascript", "python" },
+	ensure_installed = { "lua", "typescript", "javascript", "python", "gitcommit" },
 	highlight = { enable = true },
 	indent = { enable = true },
 })
