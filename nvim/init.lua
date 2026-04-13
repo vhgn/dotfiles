@@ -63,6 +63,14 @@ vim.api.nvim_create_autocmd("FocusLost", {
 	pattern = "*",
 	command = "silent! wa",
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "TelescopePrompt",
+	callback = function(args)
+		vim.bo[args.buf].complete = ""
+		vim.lsp.completion.enable(false, nil, args.buf)
+	end,
+})
 -- }}}
 
 -- Filetypes {{{
