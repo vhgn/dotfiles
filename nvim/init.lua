@@ -147,7 +147,7 @@ vim.fn.sign_define({
 -- }}}
 
 -- LSPs {{{
-vim.opt.completeopt = { "menuone", "noselect", "fuzzy", "popup", "nosort", "preview" }
+vim.opt.completeopt = { "menuone", "noselect", "fuzzy", "popup", "preview" }
 vim.opt.complete = { ".", "w", "b", "u", "o" }
 
 vim.api.nvim_create_autocmd("LspAttach", {
