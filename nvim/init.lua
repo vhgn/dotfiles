@@ -129,11 +129,20 @@ require("nvim-treesitter").setup({
 	highlight = { enable = true },
 	indent = { enable = true },
 })
+vim.api.nvim_create_autocmd("FileType", {
+  callback = function()
+    pcall(vim.treesitter.start)
+    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  end,
+})
 
 -- Colors
 vim.cmd.colorscheme("moonfly")
-vim.api.nvim_set_hl(0, "MoonflyTurquoise", {})
+-- vim.api.nvim_set_hl(0, "MoonflyTurquoise", {})
 vim.api.nvim_set_hl(0, "TreesitterContext", { bg = "#222222" })
+vim.api.nvim_set_hl(0, "DapStoppedLine", { bg = "#2e4d2e" })
+
+vim.fn.sign_define("DapStopped", { text = ">", texthl = "DiagnosticSignHint", linehl = "DapStoppedLine", numhl = "DapStoppedLine" })
 
 -- LSP
 
@@ -168,6 +177,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 vim.lsp.enable("lua_ls")
 vim.lsp.enable("ts_ls")
+vim.lsp.enable("marksman")
 -- }}}
 
 -- Mappings {{{
