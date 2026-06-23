@@ -22,8 +22,8 @@ export VISUAL="nvim"
 # pnpm
 export PNPM_HOME="/Users/vahagn/Library/pnpm"
 case ":$PATH:" in
-  *":$PNPM_HOME:"*) ;;
-  *) export PATH="$PNPM_HOME:$PATH" ;;
+  *":$PNPM_HOME/bin:"*) ;;
+  *) export PATH="$PNPM_HOME/bin:$PATH" ;;
 esac
 # pnpm end
 
@@ -42,6 +42,9 @@ eval "$(direnv hook zsh)"
 
 # yarn
 export PATH="$PATH:$HOME/.yarn/bin"
+
+eval "$(mise activate)"
+eval "$(fnox activate)"
 
 # Profiling END
 # zprof
